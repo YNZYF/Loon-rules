@@ -1,0 +1,18 @@
+#!name=屏蔽iOS更新
+#!desc=屏蔽 iOS 系统更新，需匹配 REJECT 策略组。只在 Loon 开启时生效；想彻底屏蔽请同时装 tvOS 描述文件。
+#!icon=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Apple_Update.png
+
+[Rule]
+DOMAIN-SUFFIX,mesu.apple.com,REJECT
+DOMAIN-SUFFIX,gdmf.apple.com,REJECT
+DOMAIN-SUFFIX,updates-http.cdn-apple.com,REJECT
+DOMAIN-SUFFIX,updates.cdn-apple.com,REJECT
+DOMAIN-SUFFIX,xp.apple.com,REJECT
+DOMAIN-SUFFIX,swcdn.apple.com,REJECT
+DOMAIN-SUFFIX,swscan.apple.com,REJECT
+DOMAIN-SUFFIX,swdownload.apple.com,REJECT
+DOMAIN-SUFFIX,swdist.apple.com,REJECT
+DOMAIN-SUFFIX,gg.apple.com,REJECT
+DOMAIN-SUFFIX,ns.itunes.apple.com,REJECT
+# 注意：故意没有加 appldnld.apple.com，加了它会连 App Store 的应用下载/更新一起拦掉。
+# 如果你连 App 更新也不想让它走，单独加一行：DOMAIN-SUFFIX,appldnld.apple.com,REJECT
