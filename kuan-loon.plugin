@@ -1,7 +1,16 @@
 #!name=酷安去广告
-#!desc=基于 2026-11-13 酷安 iOS 16.7.2 抓包（56 条请求）：拦截抓包中出现的京东 Kepler 与阿里 Tanx 广告 SDK 配置请求，并用脚本过滤首页信息流 / 帖子详情里的推广卡片。规则部分无需 MITM；脚本部分需要开启 MITM 并信任 Loon 证书，否则只生效规则部分。
+#!desc=基于 2026-11-13 酷安 iOS 16.7.2 三份抓包：开屏广告是穿山甲 Pangle（webcast-open.douyin.com 拉配置 + 字节可玩广告组件），另拦京东 Kepler 与阿里 Tanx 广告 SDK，并用脚本过滤首页信息流 / 帖子详情里的推广卡片。规则部分无需 MITM；脚本部分需要开启 MITM 并信任 Loon 证书，否则只生效规则部分。
 
 [Rule]
+# ===== 开屏广告：穿山甲 Pangle（新抓包 551、552 两份都有，第一份没有）=====
+# 抓包证据：webcast-open.douyin.com/webcast/openapi/pangle/setting/?app_id=478522&package_name=com.coolapk.app&device_platform=ios
+# 返回 pangle_site_id 5156243，配置包下发地址在 *.webcastcdn-tos-sign.douyinstatic.com，enable_feed_no_ad:false
+DOMAIN,webcast-open.douyin.com,REJECT
+DOMAIN-SUFFIX,webcastcdn-tos-sign.douyinstatic.com,REJECT
+# 抓包证据：lf-cdn-tos.bytescm.com/obj/static/ad/play-comp/playable-component-sdk/package.ugen.json?aid=5000546（字节可玩广告组件）
+DOMAIN,lf-cdn-tos.bytescm.com,REJECT
+# 注意：webcast-open.douyin.com 也是抖音直播的接口域名，拦了它可能影响抖音 App 的直播功能；如果抖音直播异常，先注释掉这一行再试。
+# ===== 其他广告 SDK（三份抓包里一直都在）=====
 # 抓包证据：User-Agent 均为 CoolMarket/16.7.2，dg.k.jd.com/ksdk/* 与 getConfigNew（京东 Kepler SDK，广告 / 推广配置）
 DOMAIN-SUFFIX,dg.k.jd.com,REJECT
 # 抓包证据：sdk-config.tanx.com/requestConfigV2（阿里妈妈 Tanx 广告 SDK 配置）
