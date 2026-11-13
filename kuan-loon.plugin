@@ -1,0 +1,20 @@
+#!name=酷安去广告
+#!desc=基于 2026-11-13 酷安 iOS 16.7.2 抓包（56 条请求）：拦截抓包中出现的京东 Kepler 与阿里 Tanx 广告 SDK 配置请求，并用脚本过滤首页信息流 / 帖子详情里的推广卡片。规则部分无需 MITM；脚本部分需要开启 MITM 并信任 Loon 证书，否则只生效规则部分。
+
+[Rule]
+# 抓包证据：User-Agent 均为 CoolMarket/16.7.2，dg.k.jd.com/ksdk/* 与 getConfigNew（京东 Kepler SDK，广告 / 推广配置）
+DOMAIN-SUFFIX,dg.k.jd.com,REJECT
+# 抓包证据：sdk-config.tanx.com/requestConfigV2（阿里妈妈 Tanx 广告 SDK 配置）
+DOMAIN-SUFFIX,sdk-config.tanx.com,REJECT
+# 抓包证据：iuni.telecome.cn/i/idaa/report 与 /i/idcc/report（广告归因 / 统计上报）。如果酷安出现异常，先注释掉这一行再试。
+DOMAIN-SUFFIX,iuni.telecome.cn,REJECT
+# 注意：抓包里还有 119.29.29.88 / 119.29.29.90（腾讯 DNSPod 的 HTTPDNS 节点，/d?dn=… 与 /conf），那是解析域名的通道，不是广告本身，拦了可能影响其他 App 的解析，所以没加进规则。
+# 注意：api.coolapk.com、image.coolapk.com、avatar.coolapk.com 是正文、图片、头像，不能拦；信息流里的推广卡片由下面 [Script] 过滤。
+# 注意：mum.alibabachengdun.com/repTg.json（pn=com.coolapk.app）是阿里风控 / 设备上报，不是广告投放本身，先不拦，拦了可能触发风控或登录异常。
+
+[Script]
+# 首页信息流 main/indexV8、帖子详情 feed/detail、回复 feed/replyList、话题页 page/dataList：去掉带 sponsor / ad 标记的推广卡片
+http-response ^https?:\/\/api\.coolapk\.com\/v6\/(main\/indexV8|feed\/(replyList|detail)|page\/dataList) script-path=https://raw.githubusercontent.com/YNZYF/loon-rules/main/kuan-loon.js, requires-body=true, timeout=10, tag=酷安信息流去广告
+
+[MITM]
+hostname = api.coolapk.com
