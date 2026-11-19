@@ -1,0 +1,80 @@
+#!name=酷安去广告
+#!desc=由 Surge 模块 Kuan.sgmodule（Yi-r8/Surge，2026-11-14 v7）转换，适配 Loon：去开屏广告、首页信息流、话题热议、搜索热词、我的页面推广卡片、帖子详情好物/赞助卡及评论区广告卡。Surge 的 http-response-jq 改为 JS 脚本 Kuan.js（与插件同仓库）；规则部分无需 MITM，脚本部分需开启 MITM 并信任 Loon 证书。
+#!author=小慧（原模块转换自 ZenmoFeiShi / 怎么肥事、walala；feed/detail 与 replyList 补自 myouhi / xiaomaoJT 的公开去广告逻辑）
+#!homepage=https://github.com/Yi-r8/Surge/blob/main/sgmodule/Kuan.sgmodule
+#!category=去广告
+#!version=2026-11-14-v7-loon
+
+# 说明：[Rule] 是全局生效的：这几家 SDK 的广告在其他 App 里也会一并被拦。
+# 与 kuan-loon.plugin 的区别：本插件额外拦了 Pangle / GDT / Tanx / 快手更多域名，
+# 并用脚本过滤酷安首页、话题页、我的页面、帖子详情、评论区的推广卡片；
+# kuan-loon.plugin 的规则来自 2026-11-19 的 16.7.3 实测抓包，两者可同时启用。
+
+[Rule]
+# ============ 穿山甲 / Pangle / GroMore（字节）============
+DOMAIN-SUFFIX,pangolin-sdk-toutiao.com,REJECT-DROP
+AND,((DOMAIN-SUFFIX,pangolin-sdk-toutiao.com),(PROTOCOL,QUIC)),REJECT-DROP
+DOMAIN-SUFFIX,pangolin-sdk-toutiao-b.com,REJECT-DROP
+AND,((DOMAIN-SUFFIX,pangolin-sdk-toutiao-b.com),(PROTOCOL,QUIC)),REJECT-DROP
+DOMAIN-SUFFIX,pangolin-sdk-toutiao1.com,REJECT-DROP
+AND,((DOMAIN-SUFFIX,pangolin-sdk-toutiao1.com),(PROTOCOL,QUIC)),REJECT-DROP
+DOMAIN-SUFFIX,pglstatp-toutiao.com,REJECT-DROP
+AND,((DOMAIN-SUFFIX,pglstatp-toutiao.com),(PROTOCOL,QUIC)),REJECT-DROP
+DOMAIN-SUFFIX,pangle.io,REJECT-DROP
+AND,((DOMAIN-SUFFIX,pangle.io),(PROTOCOL,QUIC)),REJECT-DROP
+DOMAIN,ad.toutiao.com,REJECT-DROP
+AND,((DOMAIN,ad.toutiao.com),(PROTOCOL,QUIC)),REJECT-DROP
+# 字节域名调度（SDK 用它换取可用广告域名，会绕过域名拦截）
+# 注意：只拦精确主机。zijieapi.com 是字节主接口域（抖音 get_domains、
+# ma5 API、polaris 都走这里），写成 DOMAIN-SUFFIX 会把抖音整个拦掉。
+DOMAIN,tnc3-alisc1.zijieapi.com,REJECT-DROP
+AND,((DOMAIN,tnc3-alisc1.zijieapi.com),(PROTOCOL,QUIC)),REJECT-DROP
+
+# ============ 优量汇 / 腾讯广告（GDT）============
+DOMAIN-SUFFIX,gdt.qq.com,REJECT-DROP
+AND,((DOMAIN-SUFFIX,gdt.qq.com),(PROTOCOL,QUIC)),REJECT-DROP
+DOMAIN-SUFFIX,gdtimg.com,REJECT-DROP
+AND,((DOMAIN-SUFFIX,gdtimg.com),(PROTOCOL,QUIC)),REJECT-DROP
+DOMAIN-SUFFIX,pgdt.gtimg.cn,REJECT-DROP
+AND,((DOMAIN-SUFFIX,pgdt.gtimg.cn),(PROTOCOL,QUIC)),REJECT-DROP
+DOMAIN-SUFFIX,ad.qq.com,REJECT-DROP
+AND,((DOMAIN-SUFFIX,ad.qq.com),(PROTOCOL,QUIC)),REJECT-DROP
+DOMAIN-SUFFIX,e.qq.com,REJECT-DROP
+AND,((DOMAIN-SUFFIX,e.qq.com),(PROTOCOL,QUIC)),REJECT-DROP
+
+# ============ 阿里 TanX ============
+DOMAIN-SUFFIX,tanx.com,REJECT-DROP
+AND,((DOMAIN-SUFFIX,tanx.com),(PROTOCOL,QUIC)),REJECT-DROP
+
+# ============ 快手联盟 ============
+DOMAIN-SUFFIX,kuaishouzt.com,REJECT-DROP
+AND,((DOMAIN-SUFFIX,kuaishouzt.com),(PROTOCOL,QUIC)),REJECT-DROP
+DOMAIN-SUFFIX,open.e.kuaishou.com,REJECT-DROP
+AND,((DOMAIN-SUFFIX,open.e.kuaishou.com),(PROTOCOL,QUIC)),REJECT-DROP
+DOMAIN-SUFFIX,kwaiad.com,REJECT-DROP
+AND,((DOMAIN-SUFFIX,kwaiad.com),(PROTOCOL,QUIC)),REJECT-DROP
+DOMAIN-SUFFIX,adkwai.com,REJECT-DROP
+AND,((DOMAIN-SUFFIX,adkwai.com),(PROTOCOL,QUIC)),REJECT-DROP
+
+[Rewrite]
+# 穿山甲广告 SDK：直接拒绝（注：同域名已在 [Rule] 里 REJECT-DROP，这条是原模块保留）
+^https?://api-access\.pangolin-sdk-toutiao\.com/api/ad/union/sdk reject
+# 搜索热词：返回空对象（原模块 Map Local 的 data="{}" 等价写法）
+(?i)^https://api\.coolapk\.com/v6/search\?.*type=hotSearch reject-dict
+
+[Script]
+# 开屏广告：main/init 里的 SplashAd.* / Ad.PRELOAD* / Ad.SPLASH* / Ad.ADLOAD* 配置 + 指定推广位
+http-response ^https://api\.coolapk\.com/v6/main/init script-path=https://raw.githubusercontent.com/YNZYF/loon-rules/main/Kuan.js, requires-body=true, timeout=10, tag=酷安开屏配置过滤
+# 首页信息流 indexV8：去掉“值得买 / 红包”类推广及 sponsorCard
+http-response ^https://api\.coolapk\.com/v6/main/indexV8 script-path=https://raw.githubusercontent.com/YNZYF/loon-rules/main/Kuan.js, requires-body=true, timeout=10, tag=酷安首页信息流过滤
+# 列表页 dataList：去掉“话题热议”、推广卡片及 sponsorCard
+http-response ^https://api\.coolapk\.com/v6/page/dataList script-path=https://raw.githubusercontent.com/YNZYF/loon-rules/main/Kuan.js, requires-body=true, timeout=10, tag=酷安列表页过滤
+# 我的页面卡片配置：去掉 textLink 类推广入口
+http-response ^https://api\.coolapk\.com/v6/account/loadConfig\?key=my_page_card_config script-path=https://raw.githubusercontent.com/YNZYF/loon-rules/main/Kuan.js, requires-body=true, timeout=10, tag=酷安我的页面过滤
+# 帖子详情 feed/detail：清空好物卡与赞助卡，过滤无 id 的热门/置顶回复
+http-response ^https://api\.coolapk\.com/v6/feed/detail script-path=https://raw.githubusercontent.com/YNZYF/loon-rules/main/Kuan.js, requires-body=true, timeout=10, tag=酷安帖子详情过滤
+# 评论列表 feed/replyList：只保留有 id 且不是 card 型的正常回复
+http-response ^https://api\.coolapk\.com/v6/feed/replyList script-path=https://raw.githubusercontent.com/YNZYF/loon-rules/main/Kuan.js, requires-body=true, timeout=10, tag=酷安评论列表过滤
+
+[MITM]
+hostname = api.coolapk.com
