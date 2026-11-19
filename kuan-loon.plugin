@@ -1,5 +1,5 @@
 #!name=酷安去广告
-#!desc=基于 2026-11-13 酷安 iOS 16.7.2 三份抓包：开屏广告是穿山甲 Pangle（webcast-open.douyin.com 拉配置 + 字节可玩广告组件），另拦京东 Kepler 与阿里 Tanx 广告 SDK，并用脚本过滤首页信息流 / 帖子详情里的推广卡片。规则部分无需 MITM；脚本部分需要开启 MITM 并信任 Loon 证书，否则只生效规则部分。
+#!desc=基于 2026-11-13 酷安 iOS 16.7.2 三份抓包 + 2026-11-19 16.7.3 Stream 冷启动抓包（97 条请求）：开屏广告是穿山甲 Pangle（api-access.pangolin-sdk-toutiao.com 的 mediation/exchange 拉广告 + pglstatp-toutiao.com 下发渲染组件），另拦广点通、京东 Kepler 与阿里 Tanx 广告 SDK，并用脚本过滤首页信息流 / 帖子详情里的推广卡片。规则部分无需 MITM；脚本部分需要开启 MITM 并信任 Loon 证书，否则只生效规则部分。
 
 [Rule]
 # ===== 开屏广告：穿山甲 Pangle（新抓包 551、552 两份都有，第一份没有）=====
@@ -9,6 +9,22 @@ DOMAIN,webcast-open.douyin.com,REJECT
 DOMAIN-SUFFIX,webcastcdn-tos-sign.douyinstatic.com,REJECT
 # 抓包证据：lf-cdn-tos.bytescm.com/obj/static/ad/play-comp/playable-component-sdk/package.ugen.json?aid=5000546（字节可玩广告组件）
 DOMAIN,lf-cdn-tos.bytescm.com,REJECT
+# ===== 2026-11-19 酷安 16.7.3 新抓包（Stream HAR，冷启动 97 条请求）=====
+# 旧规则只拦了 webcast-open.douyin.com（16.7.2 的配置接口），但 16.7.3 里开屏广告真正走下面这几个域名，所以开屏一直去不掉。
+# 抓包证据：api-access.pangolin-sdk-toutiao.com/api/ad/union/mediation/exchange/ 返回 25777 字节（开屏广告本体，冷启动后 0.6 秒）+ /api/ad/union/sdk/settings/ 返回 16497 字节；
+# 随后 sf3-fe-tos.pglstatp-toutiao.com 下发广告渲染组件 tetris bundle.js（11391 字节，两次），说明广告已渲染。
+# 注意：get_ads 本身多返回“没有匹配到合适的广告”（20001/162），开屏走的是 mediation，不是 get_ads，所以只拦 get_ads 没用。
+DOMAIN-SUFFIX,pangolin-sdk-toutiao.com,REJECT
+DOMAIN-SUFFIX,pglstatp-toutiao.com,REJECT
+# 抓包证据：toblog.ctobsnssdk.com/service/2/device_register_only/ 与 /log_settings/（字节广告日志上报）
+DOMAIN-SUFFIX,ctobsnssdk.com,REJECT
+# ===== 其他广告 SDK：16.7.3 冷启动时也在初始化 =====
+# 抓包证据：sdk.e.qq.com/msg、/event（广点通 GDT 上报），win.gdt.qq.com/win_notice.fcg（GDT 竞价胜出通知），pgdt.ugdtimg.com（GDT 广告素材），mi.gdt.qq.com（GDT 配置，403）
+DOMAIN-SUFFIX,e.qq.com,REJECT
+DOMAIN-SUFFIX,gdt.qq.com,REJECT
+DOMAIN-SUFFIX,ugdtimg.com,REJECT
+# 抓包证据：et.tanx.com/api/updateZdata/v4（阿里 Tanx 事件上报；sdk-config.tanx.com 已在旧规则里）
+DOMAIN-SUFFIX,et.tanx.com,REJECT
 # 注意：webcast-open.douyin.com 也是抖音直播的接口域名，拦了它可能影响抖音 App 的直播功能；如果抖音直播异常，先注释掉这一行再试。
 # ===== 其他广告 SDK（三份抓包里一直都在）=====
 # 抓包证据：User-Agent 均为 CoolMarket/16.7.2，dg.k.jd.com/ksdk/* 与 getConfigNew（京东 Kepler SDK，广告 / 推广配置）
