@@ -11,6 +11,9 @@
 #     香港节点会被 Gemini API / AI Studio 拒掉（网页版可能能开，API 和 AI Studio 不行）
 # (3) 换节点后清掉 gemini.google.com / google.com 的 Cookie 再重新登录
 #     Gemini 还会看 Google 账号地区，账号地区要和节点地区一致，否则一样报地区不可用
+# (4) 顺序很重要：Loon 规则是先命中先生效。Gemini.list 要放在 AI.list、
+#     Google 通用规则、GEOIP,CN,DIRECT 和 FINAL 之前，否则 accounts.google.com
+#     可能先被别的规则直连，Google 就会看到你的真实 IP，直接判地区不一致
 # 注意：只加 gemini.google.com 一个域名是不够的，登录、静态资源、推理 API
 # 走的是不同域名，漏一个就会出现“页面能开、发消息转圈 / 地区不可用”
 
@@ -20,6 +23,7 @@ DOMAIN-SUFFIX,deepmind.google
 DOMAIN-SUFFIX,developerprofiles-pa.googleapis.com
 
 # Google Generative Language API（Gemini 推理接口，网页和 API 都走这里）
+DOMAIN,aida.googleapis.com
 DOMAIN-SUFFIX,geller-pa.googleapis.com
 DOMAIN-SUFFIX,generativelanguage.googleapis.com
 DOMAIN-SUFFIX,proactivebackend-pa.googleapis.com
@@ -37,8 +41,8 @@ DOMAIN-SUFFIX,aistudio.google.com
 DOMAIN-SUFFIX,bard.google.com
 DOMAIN-SUFFIX,gemini.google.com
 DOMAIN-SUFFIX,gemini.google
-DOMAIN,alkalicore-pa.clients6.google.com
-DOMAIN,alkalimakersuite-pa.clients6.google.com
+DOMAIN-SUFFIX,alkalicore-pa.clients6.google.com
+DOMAIN-SUFFIX,alkalimakersuite-pa.clients6.google.com
 DOMAIN,webchannel-alkalimakersuite-pa.clients6.google.com
 DOMAIN-SUFFIX,generativeai.google
 DOMAIN-SUFFIX,makersuite.google.com
