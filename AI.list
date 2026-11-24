@@ -1,0 +1,142 @@
+#!name=AI分流合集
+#!desc=OpenAI / Claude / Gemini / Copilot / Perplexity / Grok 等所有 AI 走同一个代理组，节点固定美国 / 日本 / 新加坡 / 台湾，不要用香港和自动测速
+#!author=fmz200, blackmatrix7, YNZYF
+#!homepage=https://github.com/YNZYF/loon-rules
+# 合并来源：
+# (1) fmz200/wool_scripts Loon/rule/AI.list（2026-03-31）：ChatGPT / Claude / Copilot / Apple Intelligence / JetBrains / Meta / Perplexity / Mistral / Grok / Trae 部分原样保留
+# (2) blackmatrix7/ios_rule_script Gemini.list + 本仓库 Gemini.list 的补全：Gemini 登录 / 静态资源 / API 后端域名
+# 用法（Loon）：
+# (1) 配置 -> 分流规则 -> 右上角 + -> 类型选 Rule Set
+#     链接填：https://raw.githubusercontent.com/YNZYF/loon-rules/main/AI.list
+#     策略选你的 AI 代理组（单独建一个 select 组，只放美国 / 日本 / 新加坡 / 台湾节点）
+# (2) 不要用香港节点：OpenAI / Claude / Gemini API / AI Studio 都屏蔽香港；Gemini iOS App 的名单里也没有香港和澳门
+#     不要用 url-test 自动切换，自动测速经常跳到延迟最低的香港节点，出口 IP 一跳就报地区不支持
+# (3) 换节点后清掉对应网站的 Cookie 再重新登录；Gemini 还会看 Google 账号地区，账号地区要和节点地区一致
+# (4) 顺序：这个 AI.list 要放在 Google 通用规则、GEOIP,CN,DIRECT 和 FINAL 之前，Loon 是先命中先生效
+# 注意：如果你之前同时挂了 fmz 的 AI.list 和本仓库的 Gemini.list，导入这个合集后把旧的那两个删掉，
+# 只留这一个，否则重复规则 / 顺序冲突，一样会出问题
+
+# OpenAI ChatGPT
+AND,((DOMAIN-KEYWORD,chatgpt-async-webps-prod-),(DOMAIN-SUFFIX,webpubsub.azure.com))
+AND,((DOMAIN-KEYWORD,openaicom-api-),(DOMAIN-SUFFIX,azurefd.net))
+DOMAIN,chatgpt.livekit.cloud
+DOMAIN,host.livekit.cloud
+DOMAIN-SUFFIX,turn.livekit.cloud
+DOMAIN,openai.com.cdn.cloudflare.net
+DOMAIN,openaiapi-site.azureedge.net
+DOMAIN,openaicomproductionae4b.blob.core.windows.net
+DOMAIN,production-openaicom-storage.azureedge.net
+DOMAIN-SUFFIX,chat.com
+DOMAIN-SUFFIX,chatgpt.com
+DOMAIN-SUFFIX,oaistatic.com
+DOMAIN-SUFFIX,oaiusercontent.com
+DOMAIN-SUFFIX,openai.com
+DOMAIN-SUFFIX,sora.com
+
+# Anthropic Claude
+DOMAIN-SUFFIX,anthropic.com
+DOMAIN-SUFFIX,claude.ai
+DOMAIN-SUFFIX,claude.com
+DOMAIN-SUFFIX,clau.de
+DOMAIN-SUFFIX,claudeusercontent.com
+IP-CIDR,160.79.104.0/23,no-resolve
+IP-CIDR6,2607:6bc0::/48,no-resolve
+
+# Google Gemini
+# 网页 + App + AI Studio + API 一整条链，只加 gemini.google.com 一个域名是不够的
+DOMAIN,ai.google.dev
+DOMAIN,aida.googleapis.com
+DOMAIN-SUFFIX,aistudio.google.com
+DOMAIN-SUFFIX,alkalicore-pa.clients6.google.com
+DOMAIN-SUFFIX,alkalimakersuite-pa.clients6.google.com
+DOMAIN,webchannel-alkalimakersuite-pa.clients6.google.com
+DOMAIN-SUFFIX,bard.google.com
+DOMAIN-SUFFIX,deepmind.com
+DOMAIN-SUFFIX,deepmind.google
+DOMAIN-SUFFIX,developerprofiles-pa.googleapis.com
+DOMAIN-SUFFIX,geller-pa.googleapis.com
+DOMAIN-SUFFIX,gemini.google.com
+DOMAIN-SUFFIX,gemini.google
+DOMAIN-SUFFIX,generativeai.google
+DOMAIN-SUFFIX,generativelanguage.googleapis.com
+DOMAIN-SUFFIX,makersuite.google.com
+DOMAIN-SUFFIX,proactivebackend-pa.googleapis.com
+DOMAIN-SUFFIX,proactive-backend-pa.googleapis.com
+DOMAIN-SUFFIX,alkalicore-pa.googleapis.com
+DOMAIN-SUFFIX,alkalimakersuite-pa.googleapis.com
+DOMAIN-SUFFIX,robinfrontend-pa.googleapis.com
+DOMAIN-SUFFIX,subscriptionsfirstparty-pa.googleapis.com
+DOMAIN-SUFFIX,content-autofill.googleapis.com
+DOMAIN-SUFFIX,ai.studio
+# Gemini 登录与静态资源（fmz 原版没有这几行，漏了会登录失败或页面加载不全）
+DOMAIN,accounts.google.com
+DOMAIN,oauth2.googleapis.com
+DOMAIN-SUFFIX,gstatic.com
+DOMAIN-SUFFIX,googleusercontent.com
+DOMAIN,ssl.gstatic.com
+DOMAIN,one.google.com
+# Gemini Code Assist / NotebookLM / Nano Banana / Antigravity / Stitch
+DOMAIN,cloudaicompanion.googleapis.com
+DOMAIN,daily-cloudcode-pa.googleapis.com
+DOMAIN-SUFFIX,cloudcode-pa.googleapis.com
+DOMAIN-SUFFIX,notebooklm.google
+DOMAIN-SUFFIX,notebooklm.google.com
+DOMAIN,notebooklm-pa.googleapis.com
+DOMAIN,notebooklm.googleapis.com
+DOMAIN-SUFFIX,nanobanana.ai
+DOMAIN,antigravity-pa.googleapis.com
+DOMAIN,antigravity.googleapis.com
+DOMAIN-SUFFIX,antigravity.google
+DOMAIN-SUFFIX,antigravity-unleash.goog
+DOMAIN-SUFFIX,stitch.withgoogle.com
+
+# GitHub Copilot
+DOMAIN,api.githubcopilot.com
+DOMAIN,copilot-proxy.githubusercontent.com
+DOMAIN,copilot.microsoft.com
+DOMAIN,sydney.bing.com
+DOMAIN-SUFFIX,githubcopilot.com
+
+# Apple Intelligence
+DOMAIN-SUFFIX,apple-relay.apple.com
+DOMAIN-SUFFIX,apple-relay.fastly-edge.com
+DOMAIN-SUFFIX,apple-relay.cloudflare.com
+DOMAIN-SUFFIX,apple-relay.akamaized.net
+DOMAIN-SUFFIX,gateway.icloud.com
+DOMAIN-SUFFIX,guzzoni.apple.com
+DOMAIN-SUFFIX,cp4.cloudflare.com
+DOMAIN-SUFFIX,gspe1-ssl.ls.apple.com
+DOMAIN-SUFFIX,apps.mzstatic.com
+
+# JetBrains AI
+DOMAIN-SUFFIX,grazie.ai
+DOMAIN-SUFFIX,grazie.aws.intellij.net
+DOMAIN-SUFFIX,jetbrains.ai
+
+# Meta AI
+DOMAIN,imagine.meta.com
+DOMAIN-SUFFIX,meta.ai
+
+# Perplexity AI
+DOMAIN-SUFFIX,pplx.ai
+DOMAIN-SUFFIX,perplexity.ai
+DOMAIN-SUFFIX,perplexity.com
+
+# Mistral AI
+DOMAIN,chat.mistral.ai
+DOMAIN,console.mistral.ai
+DOMAIN-SUFFIX,mistral.ai
+
+# Grok AI
+DOMAIN,api.x.ai
+DOMAIN-SUFFIX,x.ai
+DOMAIN-SUFFIX,grok.com
+
+# Trae AI
+DOMAIN,trae-api-sg.mchost.guru
+DOMAIN-SUFFIX,trae.ai
+
+# 故意没加的：
+# DOMAIN-SUFFIX,googleapis.com —— 范围太大，会把 Drive / GCP 控制台等无关 Google 服务也拉进同一个节点
+# DOMAIN-SUFFIX,google.com —— 同理，只走 AI 的话不要加整站
+# 如果某个 AI 还是打不开，先去 Loon 仪表 -> 连接里看失败请求的域名，再补一行，不要直接加整站
