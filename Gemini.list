@@ -1,0 +1,77 @@
+# Gemini
+# Loon 分流规则集（Rule Set），不是 .plugin
+# 来源：以 blackmatrix7/ios_rule_script 的 Gemini.list 为底本
+# https://github.com/blackmatrix7/ios_rule_script/blob/master/rule/Loon/Gemini/Gemini.list
+# 并补上了登录 / 静态资源 / API 后端几个黑名单里没有、但 Gemini 网页实际会用到的域名
+# 用法（Loon）：
+# (1) 配置 -> 分流规则 -> 右上角 + -> 类型选 Rule Set
+#     链接填：https://raw.githubusercontent.com/YNZYF/loon-rules/main/Gemini.list
+#     策略选你的代理组（不要选自动测速 / 不要选香港节点，见下面注释）
+# (2) 策略组里手动固定一个美国 / 日本 / 新加坡 / 台湾节点，不要用 url-test 自动切换
+#     香港节点会被 Gemini API / AI Studio 拒掉（网页版可能能开，API 和 AI Studio 不行）
+# (3) 换节点后清掉 gemini.google.com / google.com 的 Cookie 再重新登录
+#     Gemini 还会看 Google 账号地区，账号地区要和节点地区一致，否则一样报地区不可用
+# 注意：只加 gemini.google.com 一个域名是不够的，登录、静态资源、推理 API
+# 走的是不同域名，漏一个就会出现“页面能开、发消息转圈 / 地区不可用”
+
+# Google DeepMind
+DOMAIN-SUFFIX,deepmind.com
+DOMAIN-SUFFIX,deepmind.google
+DOMAIN-SUFFIX,developerprofiles-pa.googleapis.com
+
+# Google Generative Language API（Gemini 推理接口，网页和 API 都走这里）
+DOMAIN-SUFFIX,geller-pa.googleapis.com
+DOMAIN-SUFFIX,generativelanguage.googleapis.com
+DOMAIN-SUFFIX,proactivebackend-pa.googleapis.com
+DOMAIN-SUFFIX,proactive-backend-pa.googleapis.com
+DOMAIN-SUFFIX,alkalicore-pa.googleapis.com
+DOMAIN-SUFFIX,alkalimakersuite-pa.googleapis.com
+DOMAIN-SUFFIX,robinfrontend-pa.googleapis.com
+DOMAIN-SUFFIX,subscriptionsfirstparty-pa.googleapis.com
+DOMAIN-SUFFIX,content-autofill.googleapis.com
+
+# Google AI Studio
+DOMAIN-SUFFIX,ai.studio
+DOMAIN,ai.google.dev
+DOMAIN-SUFFIX,aistudio.google.com
+DOMAIN-SUFFIX,bard.google.com
+DOMAIN-SUFFIX,gemini.google.com
+DOMAIN-SUFFIX,gemini.google
+DOMAIN,alkalicore-pa.clients6.google.com
+DOMAIN,alkalimakersuite-pa.clients6.google.com
+DOMAIN,webchannel-alkalimakersuite-pa.clients6.google.com
+DOMAIN-SUFFIX,generativeai.google
+DOMAIN-SUFFIX,makersuite.google.com
+
+# 登录与静态资源（Gemini 登录、脚本、图片走这里；漏了会登录失败或页面加载不全）
+# 如果你已经有单独的 Google 通用规则覆盖了下面这几行，可以删掉，不用重复
+DOMAIN,accounts.google.com
+DOMAIN,oauth2.googleapis.com
+DOMAIN-SUFFIX,gstatic.com
+DOMAIN-SUFFIX,googleusercontent.com
+DOMAIN,ssl.gstatic.com
+DOMAIN,one.google.com
+
+# Gemini Code Assist
+DOMAIN,cloudaicompanion.googleapis.com
+DOMAIN,daily-cloudcode-pa.googleapis.com
+DOMAIN-SUFFIX,cloudcode-pa.googleapis.com
+
+# NotebookLM
+DOMAIN-SUFFIX,notebooklm.google
+DOMAIN-SUFFIX,notebooklm.google.com
+DOMAIN,notebooklm-pa.googleapis.com
+DOMAIN,notebooklm.googleapis.com
+
+# Nano Banana / Antigravity / Stitch（同属 Google AI 生态，按需保留）
+DOMAIN-SUFFIX,nanobanana.ai
+DOMAIN,antigravity-pa.googleapis.com
+DOMAIN,antigravity.googleapis.com
+DOMAIN-SUFFIX,antigravity.google
+DOMAIN-SUFFIX,antigravity-unleash.goog
+DOMAIN-SUFFIX,stitch.withgoogle.com
+
+# 故意没加的：
+# DOMAIN-SUFFIX,googleapis.com —— 范围太大，会把 Drive / GCP 控制台等无关 Google 服务也拉进同一个节点
+# DOMAIN-SUFFIX,google.com —— 同理，只走 Gemini 的话不要加整站
+# 如果上面这些域名还不够，先去 Loon 的连接日志里看失败请求的 SNI / 域名，再补一行，不要直接加整站
