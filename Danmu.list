@@ -1,0 +1,11 @@
+# Danmu — SenPlayer 弹幕 API 分流规则
+# 把自建的 danmu_api Worker 域名走代理
+# 原因：workers.dev 在国内直连不稳定，SenPlayer 搜不到弹幕；走代理节点就能正常访问
+# 用法（Loon）：
+# (1) 配置 -> 分流规则 -> 右上角 + -> 类型选 Rule Set
+#     链接填：https://raw.githubusercontent.com/YNZYF/loon-rules/main/Danmu.list
+#     策略选一个稳定的代理组（节点地区不限，日本 / 美国 / 新加坡 / 香港都行）
+# (2) 保存后就生效；如果 SenPlayer 还是搜不到弹幕，开关一次飞行模式再试
+# 注意：手机只访问 workers.dev 这一个域名，弹幕源（爱优腾芒哔）是 Worker 在服务端拉取的，不用再加规则
+
+DOMAIN-SUFFIX,amberlynnlester058.workers.dev
