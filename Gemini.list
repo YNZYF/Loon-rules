@@ -4,7 +4,7 @@
 # https://github.com/blackmatrix7/ios_rule_script/blob/master/rule/Loon/Gemini/Gemini.list
 # 并补上了登录 / 静态资源 / API 后端几个黑名单里没有、但 Gemini 网页实际会用到的域名
 # 用法（Loon）：
-# (1) 配置 -> 分流规则 -> 右上角 + -> 类型选 Rule Set
+# (1) 配置 -> 规则 -> 规则集 (Rule Set) -> 右上角 +
 #     链接填：https://raw.githubusercontent.com/YNZYF/loon-rules/main/Gemini.list
 #     策略选你的代理组（不要选自动测速 / 不要选香港节点，见下面注释）
 # (2) 策略组里手动固定一个美国 / 日本 / 新加坡 / 台湾节点，不要用 url-test 自动切换

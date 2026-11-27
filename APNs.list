@@ -2,7 +2,7 @@
 # 解决 iOS 海外 App（GitHub、Telegram、Instagram、X 等）收不到推送的问题
 # 原因：大陆网络下 APNs 推送通道直连经常不通，推送走代理节点就能收到
 # 用法（Loon）：
-# (1) 配置 -> 分流规则 -> 右上角 + -> 类型选 Rule Set
+# (1) 配置 -> 规则 -> 规则集 (Rule Set) -> 右上角 +
 #     链接填：https://raw.githubusercontent.com/YNZYF/loon-rules/main/APNs.list
 #     策略选一个稳定的代理组（建议单独建一个 fallback 策略组，里面放 1-2 个稳定节点，
 #     不要用 url-test 自动切换；节点地区用日本 / 美国 / 新加坡都行，别用香港）

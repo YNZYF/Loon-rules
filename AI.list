@@ -6,7 +6,7 @@
 # (1) fmz200/wool_scripts Loon/rule/AI.list（2026-03-31）：ChatGPT / Claude / Copilot / Apple Intelligence / JetBrains / Meta / Perplexity / Mistral / Grok / Trae 部分原样保留
 # (2) Gemini 不在这个文件里，单独用本仓库的 Gemini.list，走日本节点
 # 用法（Loon）：
-# (1) 配置 -> 分流规则 -> 右上角 + -> 类型选 Rule Set
+# (1) 配置 -> 规则 -> 规则集 (Rule Set) -> 右上角 +
 #     链接填：https://raw.githubusercontent.com/YNZYF/loon-rules/main/AI.list
 #     策略选你的 AI 代理组（单独建一个 select 组，只放美国 / 日本 / 新加坡 / 台湾节点）
 # (2) 不要用香港节点：OpenAI / Claude 都屏蔽香港
